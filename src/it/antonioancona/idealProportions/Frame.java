@@ -1,34 +1,47 @@
 package it.antonioancona.idealProportions;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.URL;
 
-public class Frame {
+public class Frame implements ActionListener{
 	
-	public Frame(){
+	JFrame f;
+	
+	JMenuBar mb;
+	JMenu profiles;
+		JMenuItem createNew;
+		JMenuItem importProfile;
+	JMenu about;
+		JMenuItem version;
+		JMenuItem github;
 		
-		// Main frame and menu bar creation
-		JFrame f = new JFrame("idealProportions");
-			
-			
-		JMenuBar mb = new JMenuBar();
+	private Frame(){
 		
-		// Menu bar items and subitems creation
-		JMenu profiles = new JMenu("Profiles");
-			JMenuItem createNew = new JMenuItem("Create new Profile");
-			JMenuItem importProfile = new JMenuItem("Import Profile");
+		// New frame and menu bar instance creation
+		f = new JFrame("idealProportions");
+		mb = new JMenuBar();
+		
+		// Menu bar items and subitems instance creation
+		profiles = new JMenu("Profiles");
+			createNew = new JMenuItem("Create new Profile");
+			importProfile = new JMenuItem("Import Profile");
 			
-		JMenu about = new JMenu("About");
-			JMenuItem version = new JMenuItem("Version");
-			JMenuItem creator = new JMenuItem("Creator");
+		about = new JMenu("About");
+			version = new JMenuItem("Version");
+				version.addActionListener(this);
+			github = new JMenuItem("Github Repository");
+				github.addActionListener(this);
 		
 		// Menu bar item insertion into main Menu
 		mb.add(profiles);
-			profiles.add(createNew);
 			profiles.add(importProfile);
+			profiles.add(createNew);
 		
 		mb.add(about);
 			about.add(version);
-			about.add(creator);
+			about.add(github);
 		
 		// Menu bar initiation
 		f.setJMenuBar(mb);
@@ -41,8 +54,42 @@ public class Frame {
 		
 	}
 	
+	// Web page opening method for github repository submenu action
+	public static void openWebpage(String urlString) {
+	    try {
+	        Desktop.getDesktop().browse(new URL(urlString).toURI());
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 	
-	public static void main(String[] args) {
+	
+
+	// Menu Bar Listener
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == version) {
+			
+			JFrame v = new JFrame("Version");
+			v.setSize(300, 450);
+			
+			JTextArea versionText = new JTextArea("idealProportion Application, to push people to be their best selves."
+					+ "\n Version = 0.0.1");
+			versionText.setBounds(10, 20, 260, 360);
+			
+			v.add(versionText);
+			v.setLayout(null);
+			v.setLocationRelativeTo(f);  // Opens "Version" window centered in main frame
+			v.setVisible(true);
+			
+		} else if(e.getSource() == github) {
+			
+			openWebpage("https://github.com/quaverous2/idealProportions");
+			
+		}
+	}
+	
+public static void main(String[] args) {
 		
 		new Frame();
 		
