@@ -17,10 +17,18 @@ public class Frame implements ActionListener{
 		JMenuItem version;
 		JMenuItem github;
 		
-	private Frame(){
+	JButton newCreate;
+	JButton profileImport;
+		
+		Frame(){
 		
 		// New frame and menu bar instance creation
 		f = new JFrame("idealProportions");
+		f.setSize(1024, 600);
+		f.setLayout(null);
+		f.setVisible(true);
+		
+		
 		mb = new JMenuBar();
 		
 		// Menu bar items and subitems instance creation
@@ -43,14 +51,24 @@ public class Frame implements ActionListener{
 			about.add(version);
 			about.add(github);
 		
+		// Startup Buttons
+		newCreate = new JButton("Create new Profile");
+			newCreate.setBounds(192, 220, 300, 30);
+			newCreate.addActionListener(this);
+		profileImport = new JButton("Import existing Profile");
+			profileImport.setBounds(542, 220, 300, 30);
+			profileImport.addActionListener(this);
+		
+		
+		// Startup Buttons initiation
+		f.add(newCreate);
+		f.add(profileImport);
+			
 		// Menu bar initiation
 		f.setJMenuBar(mb);
 		
 		
-		f.setSize(1024, 600);
-		f.setLayout(null);
-		f.setVisible(true);
-		
+
 		
 	}
 	
@@ -63,8 +81,6 @@ public class Frame implements ActionListener{
 	    }
 	}
 	
-	
-
 	// Menu Bar Listener
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -82,19 +98,20 @@ public class Frame implements ActionListener{
 			v.setLocationRelativeTo(f);  // Opens "Version" window centered in main frame
 			v.setVisible(true);
 			
-		} else if(e.getSource() == github) {
+		}
+		
+		if(e.getSource() == github) {
 			
 			openWebpage("https://github.com/quaverous2/idealProportions");
 			
 		}
-	}
-	
-public static void main(String[] args) {
 		
-		new Frame();
+		if(e.getSource() == newCreate) {
+			System.out.println("new profile button clicked");
+		}
 		
+		if(e.getSource() == profileImport) {
+			System.out.println("import profile button clicked");
+		}
 	}
-	
-	
-	
 }
