@@ -26,7 +26,7 @@ public class Frame implements ActionListener{
 		f = new JFrame("idealProportions");
 		f.setSize(1024, 600);
 		f.setLayout(null);
-		f.setVisible(true);
+		
 		
 		
 		mb = new JMenuBar();
@@ -69,7 +69,7 @@ public class Frame implements ActionListener{
 		
 		
 
-		
+		f.setVisible(true);
 	}
 	
 	// Web page opening method for github repository submenu action
@@ -107,7 +107,7 @@ public class Frame implements ActionListener{
 		}
 		
 		if(e.getSource() == newCreate) {
-			System.out.println("new profile button clicked");
+			new profileMaker();
 		}
 		
 		if(e.getSource() == profileImport) {
