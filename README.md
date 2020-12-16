@@ -64,11 +64,16 @@ The project is yet to be user-ready. This section will be rewritten once develop
 ## Roadmap
 
 11/12/2020
-0.0.1 (Current version) :
+0.0.1:
   * Updated README to definitive version
   * Implemented main window frame, topbar menu (submenu Profiles, About)
   * Implemented "About" submenu functionalities (About current version, GitHub repository link)
-
+  
+16/12/2020
+0.0.2:
+  * Added working profile creation window
+  * Implemented SQLite database system to store newly created profiles
+  
 <!-- LICENSE -->
 ## License
 
