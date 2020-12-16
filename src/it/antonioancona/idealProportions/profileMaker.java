@@ -10,7 +10,9 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,6 +22,7 @@ public class profileMaker implements ActionListener{
 	JFrame f;
 	JPanel p;
 	
+	JTextField name_t;
 	JTextField wrist_t;
 	JTextField height_t;
 	JTextField weight_t;
@@ -52,6 +55,9 @@ public class profileMaker implements ActionListener{
         // Define body measurements labels (Format = body part name) and text fields (Format = body  part name _ t)
         
         // MANDATORY 
+        JLabel name = new JLabel("Profile Name    ");
+        name_t = new JTextField(7);
+        
         JLabel wrist = new JLabel("Wrist Size    ");
         wrist_t = new JTextField(5);
         
@@ -96,6 +102,9 @@ public class profileMaker implements ActionListener{
         
          
         // Add mandatory labels to the frame
+        p.add(name, left);
+        p.add(name_t, right);
+        
         p.add(wrist, left);
         p.add(wrist_t, right);
         //p.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -146,15 +155,48 @@ public class profileMaker implements ActionListener{
 
 	// Cancel and Create button functionalities
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e){
 		if(e.getSource() == cancel) {
 			f.dispatchEvent(new WindowEvent(f, WindowEvent.WINDOW_CLOSING));
 		}
 		
 		// TO BE FULLY DEVELOPED
 		if(e.getSource() == create) {
-			System.out.println("TEST CREATE");
-			System.out.println(wrist_t.getText());
+			//System.out.println(wrist_t.getText());
+			try {
+				
+				// TODO = Check if Text Field have appropriate values, if any value is invalid stop the execution
+				
+				// Check if profiles table exists in DB
+				// If it does, create a new database entry with
+				// the provided data
+				if (profileTableExists()) {
+					try {
+						System.out.println("Profile table found, creating..");
+						buildProfile();
+						System.out.println("Profile Created");
+						
+					} catch (ClassNotFoundException e1) {
+						
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						
+					}
+				// If it doesn't, create the profiles table and 
+				// run this method again to have
+				// profileTableExists() == true
+				} else {
+					System.out.println("Profile table not found inside database, creating.. ");
+					profileTableCreate();
+					System.out.println("profile Table created");
+					actionPerformed(e);
+				}
+			} catch (ClassNotFoundException e1) {
+				
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				
+			}
 		}
 		
 	}
@@ -170,38 +212,134 @@ public class profileMaker implements ActionListener{
 			Statement statement = connection.createStatement();
 		    statement.setQueryTimeout(30);  // set timeout to 30 sec.
 		    
-		    statement.executeUpdate("DROP TABLE IF EXISTS profile");
-		    statement.executeUpdate("CREATE TABLE profile ("
-		    		+ "id bigint				PRIMARY KEY	NOT NULL,"
-		    		+ "name						STRING		NOT NULL,"
-		    		+ "wrist_circumference 		FLOAT		NOT NULL,"
-		    		+ "height 					FLOAT,"
-		    		+ "weight 					FLOAT,"
-		    		+ "chest_circumference 		FLOAT,"
-		    		+ "arm_circumference 		FLOAT,"
-		    		+ "forearm_circumference 	FLOAT,"
-		    		+ "thigh_circumference 		FLOAT,"
-		    		+ "calf_circumference 		FLOAT,"
-		    		+ "waist_circumference 		FLOAT,"
-		    		+ "neck_circumference 		FLOAT,"
-		    		+ "hips_circumference 		FLOAT");
+		    // TODO = modify this to add correct values into profiles based
+		    // on getText() functions;
+		    String SQL = "INSERT INTO profile (name, wrist_circumference, height, weight, chest_circumference, arm_circumference, "
+		    		+ "forearm_circumference, thigh_circumference, calf_circumference, waist_circumference, neck_circumference, hips_circumference) \n"
+		    		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?)";
+		    PreparedStatement pstmt = connection.prepareStatement(SQL);
 		    
-		    // TODO = modify this to add correct values into profiles based on getText() functions;
-		    // statement.executeUpdate("INSERT INTO profiles values(' "+ids[i]+"', '"+names[i]+"')");   
+		    pstmt.setString(1, name_t.getText());
+		    pstmt.setFloat(2, Float.parseFloat(wrist_t.getText()));
+		    pstmt.setFloat(3, Float.parseFloat(height_t.getText()));
+		    pstmt.setFloat(4, Float.parseFloat(weight_t.getText()));
+		    pstmt.setFloat(5, Float.parseFloat(chest_t.getText()));
+		    pstmt.setFloat(6, Float.parseFloat(arm_t.getText()));
+		    pstmt.setFloat(7, Float.parseFloat(forearm_t.getText()));
+		    pstmt.setFloat(8, Float.parseFloat(thigh_t.getText()));
+		    pstmt.setFloat(9, Float.parseFloat(calf_t.getText()));
+		    pstmt.setFloat(10, Float.parseFloat(waist_t.getText()));
+		    pstmt.setFloat(11, Float.parseFloat(neck_t.getText()));
+		    pstmt.setFloat(12, Float.parseFloat(hips_t.getText()));
+		    
+		    pstmt.executeUpdate(); 
 			
 		} catch(SQLException e) {
+			
 			 System.err.println(e.getMessage());
+			 
 		} finally {
+			
 			try {
+				
 				if (connection != null) {
 					connection.close();
+					
 				}
 			} catch (SQLException e) {
+				
 				System.err.println(e);
+				
 			}
 		}
 		
 	}
 	
+	// Checks if table "profile" exists in profiles.db
+	public boolean profileTableExists() throws ClassNotFoundException{
+		Class.forName("org.sqlite.JDBC");
+		Connection connection = null;
+		try {
+			
+			connection = DriverManager.getConnection("jdbc:sqlite:profiles.db");
+			DatabaseMetaData dbm = connection.getMetaData();
+			
+			ResultSet tables = dbm.getTables(null, null, "profile", null);
+			
+			if (tables.next()) {
+				return true;
+			} else {
+				return false;
+			}
+			
+		} catch(SQLException e) {
+			
+			 System.err.println(e.getMessage());
+			 
+		} finally {
+			
+			try {
+				
+				if (connection != null) {
+					connection.close();
+				}
+				
+			} catch (SQLException e) {
+				
+				System.err.println(e);
+			}
+		}
+		
+		System.out.println("problem in profileTableExists(), this"
+				+ "should never be printed.");
+		return true;
+	}
+	
+	// Creates table "profile" in profiles.db
+	public void profileTableCreate() throws ClassNotFoundException{
+		Class.forName("org.sqlite.JDBC");
+		Connection connection = null;
+		try {
+			
+			connection = DriverManager.getConnection("jdbc:sqlite:profiles.db");
+			
+			Statement statement = connection.createStatement();
+		    statement.setQueryTimeout(30);  // set timeout to 30 sec.
+		    
+		    String SQL = "CREATE TABLE profile (\n"
+		    		+ "id INTEGER PRIMARY KEY AUTOINCREMENT, \n"
+		    		+ "name tinytext, \n"
+		    		+ "wrist_circumference FLOAT(2), \n"
+		    		+ "height FLOAT(2), \n"
+		    		+ "weight FLOAT(2), \n"
+		    		+ "chest_circumference FLOAT(2), \n"
+		    		+ "arm_circumference FLOAT(2), \n"
+		    		+ "forearm_circumference FLOAT(2), \n"
+		    		+ "thigh_circumference FLOAT(2), \n"
+		    		+ "calf_circumference FLOAT(2), \n"
+		    		+ "waist_circumference FLOAT(2), \n"
+		    		+ "neck_circumference FLOAT(2), \n"
+		    		+ "hips_circumference FLOAT(2))";
+		    
+		    statement.execute(SQL);
+
+		} catch(SQLException e) {
+			
+			 System.err.println(e.getMessage());
+			 
+		} finally {
+			
+			try {
+				
+				if (connection != null) {
+					connection.close();
+				}
+				
+			} catch (SQLException e) {
+				
+				System.err.println(e);
+			}
+		}
+	}
 	
 }
