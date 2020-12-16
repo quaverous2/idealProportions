@@ -9,6 +9,12 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 
 public class profileMaker implements ActionListener{
 	JFrame f;
@@ -149,6 +155,50 @@ public class profileMaker implements ActionListener{
 		if(e.getSource() == create) {
 			System.out.println("TEST CREATE");
 			System.out.println(wrist_t.getText());
+		}
+		
+	}
+	
+	public void buildProfile() throws ClassNotFoundException{
+		
+		Class.forName("org.sqlite.JDBC");
+		Connection connection = null;
+		try {
+			
+			connection = DriverManager.getConnection("jdbc:sqlite:profiles.db");
+			
+			Statement statement = connection.createStatement();
+		    statement.setQueryTimeout(30);  // set timeout to 30 sec.
+		    
+		    statement.executeUpdate("DROP TABLE IF EXISTS profile");
+		    statement.executeUpdate("CREATE TABLE profile ("
+		    		+ "id bigint				PRIMARY KEY	NOT NULL,"
+		    		+ "name						STRING		NOT NULL,"
+		    		+ "wrist_circumference 		FLOAT		NOT NULL,"
+		    		+ "height 					FLOAT,"
+		    		+ "weight 					FLOAT,"
+		    		+ "chest_circumference 		FLOAT,"
+		    		+ "arm_circumference 		FLOAT,"
+		    		+ "forearm_circumference 	FLOAT,"
+		    		+ "thigh_circumference 		FLOAT,"
+		    		+ "calf_circumference 		FLOAT,"
+		    		+ "waist_circumference 		FLOAT,"
+		    		+ "neck_circumference 		FLOAT,"
+		    		+ "hips_circumference 		FLOAT");
+		    
+		    // TODO = modify this to add correct values into profiles based on getText() functions;
+		    // statement.executeUpdate("INSERT INTO profiles values(' "+ids[i]+"', '"+names[i]+"')");   
+			
+		} catch(SQLException e) {
+			 System.err.println(e.getMessage());
+		} finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				System.err.println(e);
+			}
 		}
 		
 	}
