@@ -49,6 +49,8 @@ Further features will be added as developement continues.
 
 * [Java](https://www.java.com/)
 * [Swing Library](https://docs.oracle.com/javase/7/docs/api/javax/swing/package-summary.html)
+* [JDBC API](https://docs.oracle.com/javase/8/docs/technotes/guides/jdbc/)
+* [SQLite](https://www.sqlite.org/index.html)
 
 <!-- GETTING STARTED -->
 ## Getting Started
